@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 joblib
 google-generativeai
 gunicorn
+python-dotenv
