@@ -4,3 +4,4 @@ joblib
 google-generativeai
 gunicorn
 python-dotenv
+Flask-Migrate
