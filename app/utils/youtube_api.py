@@ -1,6 +1,8 @@
 import requests, os
 
-API_KEY = "AIzaSyB7q7jYGMWxomcZjkIOv3mDlqFA4pYthec"  # ✅ set this in your environment
+import os
+
+API_KEY = os.getenv("YOUTUBE_API_KEY")
 
 def get_videos(query, max_results=2):
     """

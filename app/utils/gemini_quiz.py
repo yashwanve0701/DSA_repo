@@ -1,8 +1,7 @@
 import json
 import google.generativeai as genai
-
-genai.configure(api_key="AIzaSyDnl4X7zCEOMdTW0oZD7NJERs-oE8i5SIM")
-
+import os
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def generate_mcq_quiz(topic_title):
     """
