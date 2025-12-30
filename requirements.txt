@@ -6,3 +6,4 @@ gunicorn
 python-dotenv
 Flask-Migrate
 flask_cors
+flask_login
