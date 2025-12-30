@@ -5,3 +5,4 @@ google-generativeai
 gunicorn
 python-dotenv
 Flask-Migrate
+flask_cors
