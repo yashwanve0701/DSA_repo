@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ topic.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .video-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+        .active-video {
+            border: 3px solid #008000;
+        }
+
+        iframe {
+            border-radius: 12px;
+        }
+
+        .content-area {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .content-area h4 {
+            color: #008000;
+            border-left: 5px solid #008000;
+            padding-left: 10px;
+            margin-top: 25px;
+        }
+
+        .content-area pre {
+            background: #1e1e1e;
+            color: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .content-area code {
+            font-family: Consolas, monospace;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <a href="{{ url_for('study.all_topics') }}" class="btn btn-secondary mb-3">
+        ← Back to Topics
+    </a>
+
+    <div class="text-muted mb-2">
+        ⏱ Total time spent: {{ time_spent // 60 }} min {{ time_spent % 60 }} sec
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>{{ topic.title }}</h2>
+        <span class="badge bg-success">{{ topic.tags }}</span>
+    </div>
+
+    <div class="content-area mt-4">
+        {{ topic.description | safe }}
+    </div>
+
+    <!-- Completion Section -->
+    {% if is_completed %}
+        <div class="alert alert-success text-center">
+            ✅ You have completed this topic and earned <strong>+10 XP</strong>
+        </div>
+    {% else %}
+        <form method="POST"
+              action="{{ url_for('study.complete_topic', topic_id=topic.id) }}"
+              class="text-center mb-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                Mark as Completed (+10 XP)
+            </button>
+        </form>
+    {% endif %}
+
+    <hr>
+
+    <!-- Main video -->
+    <div class="text-center mb-4">
+        {% if videos %}
+        <iframe id="mainVideo" width="100%" height="480"
+                src="https://www.youtube.com/embed/{{ videos[0].videoId }}"
+                frameborder="0"
+                allowfullscreen>
+        </iframe>
+        {% else %}
+        <p>No videos found for this topic.</p>
+        {% endif %}
+    </div>
+
+    <!-- Video list -->
+    <h4>Related Tutorials</h4>
+    <div class="row">
+        {% for video in videos %}
+        <div class="col-md-4 mb-4">
+            <div class="card video-card p-2 {% if loop.index0 == 0 %}active-video{% endif %}"
+                 onclick="changeVideo('{{ video.videoId }}', this)">
+                <img src="{{ video.thumbnail }}" class="card-img-top">
+                <div class="card-body">
+                    <h6 class="card-title">{{ video.title }}</h6>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+        <a href="{{ url_for('study.topic_quiz', topic_id=topic.id) }}"
+        class="btn btn-warning btn-lg mt-3">
+            🧠 Take Quiz to Complete Topic
+        </a>
+
+
+</div>
+
+<script>
+    const startTime = Date.now();
+
+    function changeVideo(videoId, element) {
+        document.getElementById('mainVideo').src =
+            `https://www.youtube.com/embed/${videoId}`;
+
+        document.querySelectorAll('.video-card')
+            .forEach(card => card.classList.remove('active-video'));
+
+        element.classList.add('active-video');
+    }
+
+    window.addEventListener("beforeunload", function () {
+        const secondsSpent = Math.floor((Date.now() - startTime) / 1000);
+
+        const data = new Blob(
+            [JSON.stringify({ seconds: secondsSpent })],
+            { type: "application/json" }
+        );
+
+        navigator.sendBeacon(
+            "{{ url_for('study.track_time', topic_id=topic.id) }}",
+            data
+        );
+    });
+</script>
+
+</body>
+</html>

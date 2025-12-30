@@ -1,0 +1,103 @@
+{% set q = question %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ q.title }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+</head>
+
+<body>
+<div class="container-fluid p-3">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between mb-2">
+    <h5>Question {{ index + 1 }} / {{ total }}</h5>
+    <div>
+      {% if index > 0 %}
+        <a href="{{ url_for('coding_test.solve_question', test_id=test.id, index=index-1) }}"
+           class="btn btn-secondary btn-sm">⬅ Prev</a>
+      {% endif %}
+
+      {% if index + 1 < total %}
+        <button class="btn btn-primary btn-sm" onclick="goNext()">
+          Next ➡
+        </button>
+      {% else %}
+        <button class="btn btn-success btn-sm" onclick="finishTest()">
+          Finish
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Coding UI -->
+  {% include "coding/practice.html" with context %}
+
+</div>
+
+<script>
+  const startTime = Date.now();
+
+  /**
+   * Save result to backend
+   * Returns a Promise so we can wait before redirect
+   */
+  function submitResult(status) {
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+
+    return fetch("{{ url_for('coding_test.submit_result') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        test_id: {{ test.id }},
+        question_id: {{ question.id }},
+        status: status,
+        time_taken: timeTaken
+      })
+    })
+    .then(res => res.json());
+  }
+
+
+  /**
+  * Go to next question AFTER saving result
+  */
+  function goNext() {
+    // ✅ Get the actual result from the last submission
+    const lastResult = window.lastSubmissionResult;
+    const status = lastResult && lastResult.status ? lastResult.status : "Failed"; // Default to "Failed" if no submission
+
+    submitResult(status)
+      .then(() => {
+        window.location.href =
+          "{{ url_for('coding_test.solve_question', test_id=test.id, index=index+1) }}";
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error saving result. Please try again.");
+      });
+  }
+
+  /**
+  * Finish test AFTER saving result
+  */
+  function finishTest() {
+    // ✅ Get the actual result from the last submission
+    const lastResult = window.lastSubmissionResult;
+    const status = lastResult && lastResult.status ? lastResult.status : "Failed"; // Default to "Failed" if no submission
+
+    submitResult(status)
+      .then(() => {
+        window.location.href =
+          "{{ url_for('coding_test.result', test_id=test.id) }}";
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error saving result. Please try again.");
+      });
+  }
+</script>
+
+</body>
+</html>

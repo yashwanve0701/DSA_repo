@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 700px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        .topics {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .topic-item {
+            margin-bottom: 6px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<h1>➕ Create New Test</h1>
+
+<form method="POST">
+    <label>Test Title</label>
+    <input type="text" name="title" required>
+
+    <label>Description</label>
+    <textarea name="description" rows="4"></textarea>
+
+    <label>Select Topics</label>
+    <div class="topics">
+        {% for topic in topics %}
+        <div class="topic-item">
+            <input type="checkbox" name="topics" value="{{ topic.id }}">
+            {{ topic.title }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <button type="submit">Create Test</button>
+</form>
+
+<a href="{{ url_for('admin_test.dashboard') }}" class="back">
+    ⬅ Back to Tests
+</a>
+
+</body>
+</html>

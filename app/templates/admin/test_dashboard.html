@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+        }
+
+        .top-actions {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 14px;
+            text-decoration: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .btn-create {
+            background: #007bff;
+        }
+
+        .btn-back {
+            background: #6c757d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f1f1;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🧪 Manage Tests</h1>
+
+<div class="top-actions">
+    <a href="{{ url_for('admin_test.create_test') }}" class="btn btn-create">
+        ➕ Create New Test
+    </a>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-back">
+        ⬅ Back to Admin Dashboard
+    </a>
+</div>
+
+{% if tests %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Test Title</th>
+            <th>Description</th>
+            <th>Topics Covered</th>
+            <th>Questions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for test in tests %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ test.title }}</td>
+            <td>{{ test.description or "—" }}</td>
+            <td>
+                {% for topic in test.topics %}
+                    {{ topic.title }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ test.questions|length }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty">
+    No tests created yet.
+</div>
+{% endif %}
+
+</body>
+</html>

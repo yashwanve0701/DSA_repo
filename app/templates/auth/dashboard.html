@@ -1,0 +1,293 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        /* Header */
+        .header {
+            background: #1e293b;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            background: #ef4444;
+            padding: 8px 14px;
+            border-radius: 5px;
+        }
+
+        /* Main content */
+        .dashboard {
+            padding: 30px;
+        }
+
+        .stats-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .badge-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        .btn-dark {
+            background: #374151;
+        }
+
+        .btn-dark:hover {
+            background: #1f2937;
+        }
+        
+        /* Badge progress */
+        .badge-progress {
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .badge-progress-bar {
+            height: 100%;
+            background: #4ade80;
+            transition: width 0.5s ease;
+        }
+        
+        .badge-icon-large {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        /* Footer */
+        .footer {
+            background: #0f172a; /* dark slate */
+            color: #cbd5f5;
+            padding: 25px 30px;
+            margin-top: 40px;
+        }
+
+        .footer a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 15px 0;
+        }
+
+        .footer small {
+            color: #94a3b8;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h2>Study Dashboard</h2>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="font-size: 15px;">
+            👋 {{ current_user.username }}
+        </span>
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+</div>
+
+<!-- Main Dashboard -->
+<div class="dashboard">
+    <div class="row">
+        <!-- Left Column - Stats -->
+        <div class="col-md-6">
+            <div class="stats-card">
+                <h3>Your Learning Stats</h3>
+                
+                <p>⭐ XP: <strong>{{ xp }}</strong></p>
+                <p>✅ Topics Completed: <strong>{{ completed_count }}</strong></p>
+                <p>🔖 Bookmarked Topics: <strong>{{ bookmarked_count }}</strong></p>
+                <p>⏱ Total Study Time: <strong>{{ total_time // 60 }} min</strong></p>
+
+                <div class="progress mt-3" style="height: 22px;">
+                    <div class="progress-bar bg-success"
+                         role="progressbar"
+                         style="width: {{ progress_percent }}%;">
+                        {{ progress_percent }}%
+                    </div>
+                </div>
+                <small class="text-muted">Overall Progress</small>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="stats-card">
+                <h4>Start Learning</h4>
+                <a href="{{ url_for('study.all_topics') }}" class="btn">
+                    🚀 Start Learning
+                </a>
+                <a href="{{ url_for('coding.all_questions') }}" class="btn btn-dark">
+                    💻 Practice Coding
+                </a>
+                <a href="{{ url_for('coding_test.list_tests') }}" class="btn btn-dark">
+                    🧪 Start Coding Tests
+                </a>
+            </div>
+        </div>
+        
+        <!-- Right Column - Badges -->
+        <div class="col-md-6">
+            <!-- Current Badge Display -->
+            <div class="badge-display">
+                <div class="text-center">
+                    {% if equipped_badge %}
+                        <div class="badge-icon-large">{{ equipped_badge.icon }}</div>
+                        <h4>Currently Equipped</h4>
+                        <h3>{{ equipped_badge.name }}</h3>
+                        <p style="opacity: 0.9;">{{ equipped_badge.description }}</p>
+                    {% elif current_badge %}
+                        <div class="badge-icon-large">{{ current_badge.icon }}</div>
+                        <h4>Current Badge</h4>
+                        <h3>{{ current_badge.name }}</h3>
+                        <p style="opacity: 0.9;">{{ current_badge.description }}</p>
+                    {% else %}
+                        <div class="badge-icon-large" style="opacity: 0.7;">👤</div>
+                        <h4>No Badge Yet</h4>
+                        <p style="opacity: 0.9;">Complete topics to earn your first badge!</p>
+                    {% endif %}
+                    
+                    <!-- Badge Collection Button -->
+                    <a href="{{ url_for('badge.badge_collection') }}" 
+                       style="background: white; color: #764ba2; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px;">
+                        <i class="fas fa-medal"></i> View All Badges
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Next Badge Progress -->
+            {% if next_badge %}
+            <div class="stats-card">
+                <h5>Next Badge Progress</h5>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <div style="font-size: 2.5rem;">{{ next_badge.icon }}</div>
+                    <div>
+                        <h6 style="margin: 0;">{{ next_badge.name }}</h6>
+                        <small class="text-muted">{{ next_badge.description }}</small>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <small>{{ xp }} / {{ next_badge.xp_threshold }} XP</small>
+                    <small>{{ next_badge_progress_percent }}%</small>
+
+                </div>
+                
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-warning"
+                        style="width: {{ next_badge_progress_percent }}%"></div>
+                </div>
+                
+                <small class="text-muted">
+                    {{ xp_needed_for_next }} XP needed
+                </small>
+
+            </div>
+            {% else %}
+            <div class="stats-card">
+                <div class="text-center text-success">
+                    <h5>🎉 All Badges Earned!</h5>
+                    <p>You've earned all available badges. Amazing work!</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left -->
+            <div class="col-md-6">
+                <h5 style="color: #e5e7eb;">DSA Learning Platform</h5>
+                <p style="margin-bottom: 5px;">
+                    For any issue or help regarding <strong>Data Structures & Algorithms</strong>,
+                    feel free to contact us.
+                </p>
+                <small>
+                    We’re here to help you improve step by step.
+                </small>
+            </div>
+
+            <!-- Right -->
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <p style="margin-bottom: 5px;">
+                    📧 Support Email:
+                    <a href="mailto:support@dsalearning.com">
+                        support@dsalearning.com
+                    </a>
+                </p>
+                <small>
+                    © {{ current_year | default(2025) }} DSA Learning. All rights reserved.
+                </small>
+            </div>
+        </div>
+
+        <div class="footer-divider"></div>
+
+        <div class="text-center">
+            <small>
+                Built with ❤️ to help you master DSA
+            </small>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

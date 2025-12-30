@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ test.title }} – Result</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container mt-4">
+
+<h3>📊 {{ test.title }} – Test Analytics</h3>
+
+<!-- Summary -->
+<div class="mb-3">
+  <p>✅ Passed: <strong>{{ passed }} / {{ total }}</strong></p>
+  <p>⏱ Total Time: <strong>{{ total_time }} sec</strong></p>
+  <p>🏆 XP Earned: <strong>+{{ xp_earned }}</strong></p>
+</div>
+
+<table class="table table-bordered align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>#</th>
+      <th>Question</th>
+      <th>Difficulty</th>
+      <th>Status</th>
+      <th>Time Taken (sec)</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for r in results %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ r.title }}</td>
+      <td>
+        {% if r.difficulty == "easy" %}
+          <span class="badge bg-success">Easy</span>
+        {% elif r.difficulty == "medium" %}
+          <span class="badge bg-warning text-dark">Medium</span>
+        {% elif r.difficulty == "hard" %}
+          <span class="badge bg-danger">Hard</span>
+        {% else %}
+          <span class="badge bg-secondary">Unknown</span>
+        {% endif %}
+
+      </td>
+      <td>
+        {% if r.status == "Passed" %}
+          <span class="badge bg-success">Passed</span>
+        {% elif r.status == "Failed" %}
+          <span class="badge bg-danger">Failed</span>
+        {% else %}
+          <span class="badge bg-secondary">Not Attempted</span>
+        {% endif %}
+      </td>
+      <td>{{ r.time_taken }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+<hr>
+
+<h4>🧠 Topic-wise Performance Analysis</h4>
+
+<p class="text-danger">
+  ❌ Weak Topics:
+  {{ analysis.analysis["Weak"] | join(", ") if analysis.analysis["Weak"] else "None" }}
+</p>
+
+<p class="text-warning">
+  ⚠️ Average Topics:
+  {{ analysis.analysis["Average"] | join(", ") if analysis.analysis["Average"] else "None" }}
+</p>
+
+<p class="text-success">
+  ✅ Strong Topics:
+  {{ analysis.analysis["Strong"] | join(", ") if analysis.analysis["Strong"] else "None" }}
+</p>
+
+{% if analysis.blocked %}
+<p class="text-danger">
+  🚫 Do NOT start yet:
+  {{ analysis.blocked | join(", ") }}
+</p>
+{% endif %}
+
+{% if analysis.recommended %}
+<p class="text-success">
+  👉 Recommended Focus: <strong>{{ analysis.recommended }}</strong>
+</p>
+{% endif %}
+
+
+<hr>
+<h4>🧠 Detailed Topic Feedback</h4>
+
+{% for topic, text in explanations.items() %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5>{{ topic }}</h5>
+      <p>{{ text }}</p>
+    </div>
+  </div>
+{% endfor %}
+
+<a href="{{ url_for('coding_test.list_tests') }}" class="btn btn-primary">
+  Back to Tests
+</a>
+
+</body>
+</html>

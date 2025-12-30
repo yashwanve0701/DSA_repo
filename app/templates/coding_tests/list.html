@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coding Tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background-color: #f8f9fa; }
+
+    .navbar {
+      background-color: #008000;
+    }
+    .navbar-brand {
+      color: white !important;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ NAVBAR AT TOP -->
+<nav class="navbar navbar-expand-lg px-4">
+    <a class="navbar-brand" href="{{ url_for('auth.dashboard') }}">
+        DSA Learning
+    </a>
+</nav>
+
+<!-- ✅ PAGE CONTENT -->
+<div class="container mt-4">
+
+  <h3>🧪 Coding Tests</h3>
+
+  <table class="table table-bordered mt-3">
+    <thead class="table-light">
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Questions</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for test in tests %}
+      <tr>
+        <td>{{ test.title }}</td>
+        <td>{{ test.description }}</td>
+        <td>{{ test.questions | length }}</td>
+        <td>
+          <a href="{{ url_for('coding_test.test_overview', test_id=test.id) }}"
+             class="btn btn-success btn-sm">
+             View
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+
+</body>
+</html>

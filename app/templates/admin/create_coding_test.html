@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Coding Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            max-width: 900px;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        .box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 5px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .item {
+            margin-bottom: 6px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Create Coding Test</h2>
+
+<form method="POST" action="{{ url_for('admin_coding_test.create_test') }}">
+
+    <label>Test Title</label>
+    <input type="text" name="title" required>
+
+    <label>Description</label>
+    <textarea name="description"></textarea>
+
+    <!-- TOPICS -->
+    <label>Select Topics</label>
+    <div class="box">
+        {% for topic in topics %}
+        <div class="item">
+            <input
+                type="checkbox"
+                name="topics"
+                value="{{ topic.id }}"
+                class="topic-checkbox"
+                data-title="{{ topic.title|lower }}"
+            >
+            {{ topic.title }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- CODING QUESTIONS -->
+    <label>Select Coding Questions</label>
+    <div class="box">
+        {% for q in questions %}
+        <div
+            class="item question-item"
+            data-title="{{ q.title|lower }}"
+        >
+            <input type="checkbox" name="questions" value="{{ q.id }}">
+            {{ q.title }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <button type="submit">Create Coding Test</button>
+
+</form>
+
+<script>
+    const topicCheckboxes = document.querySelectorAll(".topic-checkbox");
+    const questionItems = document.querySelectorAll(".question-item");
+
+    function filterQuestions() {
+        const selectedTopics = Array.from(topicCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.dataset.title);
+
+        if (selectedTopics.length === 0) {
+            questionItems.forEach(q => q.classList.remove("hidden"));
+            return;
+        }
+
+        questionItems.forEach(q => {
+            const questionTitle = q.dataset.title;
+            const match = selectedTopics.some(topic =>
+                questionTitle.includes(topic)
+            );
+            q.classList.toggle("hidden", !match);
+        });
+    }
+
+    topicCheckboxes.forEach(cb =>
+        cb.addEventListener("change", filterQuestions)
+    );
+</script>
+
+</body>
+</html>

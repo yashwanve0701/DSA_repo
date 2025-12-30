@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}DSA Learning{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+
+        .navbar {
+            background-color: #008000;
+        }
+        .navbar-brand, .btn {
+            color: white !important;
+        }
+
+        .xp-box {
+            position: absolute;
+            right: 30px;
+            top: 80px;
+            background: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg px-4">
+    <a class="navbar-brand" href="{{ url_for('auth.dashboard') }}">DSA Learning</a>
+
+    <div class="ms-auto">
+        <form class="d-flex" action="{{ url_for('study.all_topics') }}">
+            <input class="form-control me-2" type="search" name="search"
+                   placeholder="Search topics..." value="{{ search_query or '' }}">
+            <button class="btn btn-light" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+{% if xp is defined %}
+<div class="xp-box">
+    ⭐ XP: {{ xp }}
+</div>
+{% endif %}
+
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
