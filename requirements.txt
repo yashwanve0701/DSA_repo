@@ -8,3 +8,4 @@ Flask-Migrate
 flask_cors
 flask_login
 flask_mail
+sklearn
